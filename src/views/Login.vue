@@ -6,7 +6,7 @@
     <van-form @submit="onSubmit">
       <van-field
         v-model="username"
-        name="用户名"
+        name="username"
         label="用户名"
         placeholder="用户名"
         :rules="[{ required: true, message: '请填写用户名' }]"
@@ -14,7 +14,7 @@
       <van-field
         v-model="password"
         type="password"
-        name="密码"
+        name="password"
         label="密码"
         placeholder="密码"
         :rules="[{ required: true, message: '请填写密码' }]"
@@ -29,6 +29,9 @@
 </template>
 
 <script>
+import { login } from '@/api/user'
+import { setToken } from '@/utils/storage'
+
 export default {
   name: 'LoginPage',
   data () {
@@ -38,8 +41,14 @@ export default {
     }
   },
   methods: {
-    onSubmit (values) {
-      console.log('submit', values)
+    async onSubmit (values) {
+      const { data } = await login(values)
+      this.$toast.success({
+        message: '登陆成功',
+        duration: 500
+      })
+      setToken(data.data.token)
+      await this.$router.push('/article')
     }
   }
 }

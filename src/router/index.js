@@ -1,7 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import { getToken } from '@/utils/storage'
 
 Vue.use(VueRouter)
+const whiteList = ['/login', '/register']
 
 const routes = [
   {
@@ -52,5 +54,13 @@ const routes = [
 const router = new VueRouter({
   routes
 })
-
+router.beforeEach((to, from, next) => {
+  if (getToken() !== null) {
+    next()
+  } else if (whiteList.includes(to.path)) {
+    next()
+  } else {
+    next('/login')
+  }
+})
 export default router
