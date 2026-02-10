@@ -2,9 +2,10 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import '@/utils/vant-ui'
-// import Vant from 'vant'
-// import 'vant/lib/index.css'
-// Vue.use(Vant)
+import { Tabbar, TabbarItem } from 'vant'
+
+Vue.use(Tabbar)
+Vue.use(TabbarItem)
 
 Vue.config.productionTip = false
 
