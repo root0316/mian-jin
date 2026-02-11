@@ -47,7 +47,7 @@ export default {
         message: '登陆成功',
         duration: 500
       })
-      setToken(data.data.token)
+      setToken(data.token)
       await this.$router.push('/article')
     }
   }

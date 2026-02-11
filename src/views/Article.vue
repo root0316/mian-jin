@@ -2,16 +2,27 @@
   <div class="article-page">
     <nav class="my-nav van-hairline--bottom">
       <a
+        :class="{active:sorter==='weight_desc'}"
+
+        @click="changeSorter('weight_desc')"
         href="javascript:"
       >推荐</a
       >
       <a
+        :class="{active:sorter===null}"
+        @click="changeSorter(null)"
         href="javascript:"
       >最新</a
       >
       <div class="logo"><img src="@/assets/logo.png" alt=""></div>
     </nav>
-    <ArticleItem></ArticleItem>
+    <van-list
+      v-model="loading"
+      :finished="finished"
+      finished-text="没有更多了"
+      @load="onload">
+      <ArticleItem v-for="(item) in list" :data="item" :key="item.id"></ArticleItem>
+    </van-list>
   </div>
 </template>
 
@@ -22,17 +33,37 @@ export default {
   name: 'article-page',
   data () {
     return {
-
+      list: [],
+      sorter: 'weight_desc',
+      current: 1,
+      loading: false,
+      finished: false
     }
   },
   methods: {
-
+    changeSorter (value) {
+      this.sorter = value
+      this.finished = false
+      this.list = []
+      this.current = 1
+      this.onload()
+    },
+    async onload () {
+      console.log('开始请求数据')
+      const { data } = await getArticles({
+        sorter: this.sorter,
+        current: this.current
+      })
+      this.list.push(...data.rows)
+      this.loading = false
+      this.current++
+      if (this.current > data.pageTotal) {
+        this.finished = true
+      }
+      console.log('数据请求完毕')
+    }
   },
   async created () {
-    const res = await getArticles({
-      sorter: 'weight_desc'
-    })
-    console.log(res)
   }
 
 }
@@ -42,6 +73,7 @@ export default {
 .article-page {
   margin-bottom: 50px;
   margin-top: 44px;
+
   .my-nav {
     height: 44px;
     position: fixed;
@@ -52,6 +84,7 @@ export default {
     background: #fff;
     display: flex;
     align-items: center;
+
     > a {
       color: #999;
       font-size: 14px;
@@ -59,6 +92,7 @@ export default {
       margin-left: 20px;
       position: relative;
       transition: all 0.3s;
+
       &::after {
         content: '';
         position: absolute;
@@ -70,17 +104,21 @@ export default {
         background: #222;
         transition: all 0.3s;
       }
+
       &.active {
         color: #222;
+
         &::after {
           width: 14px;
         }
       }
     }
+
     .logo {
       flex: 1;
       display: flex;
       justify-content: flex-end;
+
       > img {
         width: 64px;
         height: 28px;

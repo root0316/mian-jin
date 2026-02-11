@@ -1,23 +1,49 @@
 <template>
   <div class="collect-page">
-    收藏页面
+    <van-nav-bar fixed title="我的点赞" />
+    <van-list
+      v-model="loading"
+      :finished="finished"
+      finished-text="没有更多了"
+      @load="onLoad"
+    >
+      <ArticleItem v-for="(item,i) in list" :key="i" :data="item" />
+    </van-list>
   </div>
 </template>
 
 <script>
+import { getArticlesCollect } from '@/api/article'
+
 export default {
   name: 'CollectPage',
   data () {
     return {
-
+      list: [],
+      loading: false,
+      finished: false,
+      page: 1
     }
   },
   methods: {
+    async onLoad () {
+      // 异步更新数据
+      const { data } = await getArticlesCollect({ page: this.page })
+      this.list.push(...data.rows)
+      this.loading = false
+      this.page++
 
+      if (this.page > data.pageTotal) {
+        this.finished = true
+      }
+    }
   }
 }
 </script>
 
 <style lang="less" scoped>
-
+.collect-page {
+  margin-bottom: 50px;
+  margin-top: 44px;
+}
 </style>
